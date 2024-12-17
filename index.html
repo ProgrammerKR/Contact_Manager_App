@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Manager</title>
+    <style>
+        /* Reset and base styles */
+        body, h1, h2, ul, form, input {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #007bff;
+        }
+
+        .form-section, .search-section, .contacts-section {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        form {
+            display: grid;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #343a40;
+        }
+
+        input[type="text"], input[type="email"], input[type="number"] {
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        /* Input active border color change */
+        input:focus {
+            border-color: #007bff;
+            border-width: 2px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button.add-btn {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        button.add-btn:hover {
+            background-color: #0056b3;
+        }
+
+        button.call-btn {
+            background-color: #28a745;
+            color: #ffffff;
+        }
+
+        button.call-btn:hover {
+            background-color: #218838;
+        }
+
+        button.edit-btn {
+            background-color: #ffc107;
+            color: #000000;
+        }
+
+        button.edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        button.delete-btn {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+
+        button.delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        button.mail-btn {
+            background-color: #320f32;
+            color: white;
+        }
+
+        #searchInput {
+            width: 92%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .dialog-content {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dialog-content button {
+            margin: 5px;
+        }
+
+        #confirmDelete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        #cancelDelete {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        #okSuccess {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        /* Error message styles */
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .contact-buttons {
+                margin-top: 10px;
+            }
+        }
+    
+        .wm{
+            text-align:center;
+            color:#000;
+            font-weight:bold;
+        }
+
+        /* No Contacts Yet message style */
+        #noContactsMessage {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+        .searchcont{
+            text-align: center;
+            margin-top: 20px;
+        }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Contact Manager</h1>
+        </header>
+        <div class="wm">Created by Prog. Kaniahk Raj</div>
+        <br>
+        <br>
+        <main>
+            <section class="form-section">
+                <h2>Add New Contact</h2>
+                <br>
+                <form id="contactForm">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required>
+                    <p class="error" id="nameError"></p>
+
+                    <label for="phone">Phone:</label>
+                    <input type="number" id="phone" required>
+                    <p class="error" id="phoneError"></p>
+
+                    <label for="email">Email (optional):</label>
+                    <input type="email" id="email">
+                    <p class="error" id="emailError"></p>
+
+                    <button type="submit" class="add-btn">Add Contact</button>
+                </form>
+            </section>
+            
+            <section class="search-section" style="display: none;">
+                <h2>Search Contacts</h2>
+                <input type="text" id="searchInput" placeholder="Search by name or email">
+            </section>
+
+            <section class="contacts-section">
+                <br>
+                <h2 class="searchcont">Contacts</h2>
+                <br>
+                <ul id="contactsList"></ul>
+                <p id="noContactsMessage">No Contacts Yet</p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmationDialog" class="dialog">
+        <div class="dialog-content">
+            <p>Are you sure you want to delete this contact?</p>
+            <button id="confirmDelete">Yes, Delete</button>
+            <button id="cancelDelete">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="dialog">
+        <div class="dialog-content">
+            <p>Contact successfully deleted!</p>
+            <button id="okSuccess">OK</button>
+        </div>
+    </div>
+    
+    <script>
+        const contacts = [];
+        const contactsList = document.getElementById('contactsList');
+        const contactForm = document.getElementById('contactForm');
+        const noContactsMessage = document.getElementById('noContactsMessage');
+        const searchInputSection = document.querySelector('.search-section');
+        const searchInput = document.getElementById('searchInput');
+        const confirmationDialog = document.getElementById('confirmationDialog');
+        const successMessage = document.getElementById('successMessage');
+        let contactToDeleteIndex = null;
+
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+
+            if (!validateInputs(name, phone, email)) return;
+
+            contacts.push({ name, phone, email });
+            renderContacts();
+            contactForm.reset();
+        });
+
+        function validateInputs(name, phone, email) {
+            let isValid = true;
+
+            // Clear previous error messages
+            document.getElementById('nameError').innerText = '';
+            document.getElementById('phoneError').innerText = '';
+            document.getElementById('emailError').innerText = '';
+
+            if (!name) {
+                document.getElementById('nameError').innerText = 'Name is required.';
+                isValid = false;
+            }
+            if (!phone) {
+                document.getElementById('phoneError').innerText = 'Phone is required.';
+                isValid = false;
+            }
+            if (email && !validateEmail(email)) {
+                document.getElementById('emailError').innerText = 'Invalid email format.';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        function renderContacts() {
+            contactsList.innerHTML = '';
+            if (contacts.length === 0) {
+                noContactsMessage.style.display = 'block';
+                searchInputSection.style.display = 'none';
+            } else {
+                noContactsMessage.style.display = 'none';
+                searchInputSection.style.display = 'block';
+                contacts.forEach((contact, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${contact.name} - ${contact.phone} - ${contact.email || 'N/A'}</span>
+                        <div class="contact-buttons">
+                            <button class="call-btn" onclick="window.location.href='tel:${contact.phone}'">Call</button>
+                            ${contact.email ? `<button class="mail-btn" onclick="window.location.href='mailto:${contact.email}'">Mail</button>` : ''}
+                            <button class="edit-btn" onclick="editContact(${index})">Edit</button>
+                            <button class="delete-btn" onclick="confirmDelete(${index})">Delete</button>
+                        </div>
+                    `;
+                    contactsList.appendChild(li);
+                });
+            }
+        }
+
+        function confirmDelete(index) {
+            contactToDeleteIndex = index;
+            confirmationDialog.style.display = 'flex';
+        }
+
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (contactToDeleteIndex !== null) {
+                contacts.splice(contactToDeleteIndex, 1);
+                renderContacts();
+                confirmationDialog.style.display = 'none';
+                successMessage.style.display = 'flex';
+            }
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            confirmationDialog.style.display = 'none';
+        });
+
+        document.getElementById('okSuccess').addEventListener('click', function() {
+            successMessage.style.display = 'none';
+        });
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredContacts = contacts.filter(contact =>
+                contact.name.toLowerCase().includes(searchTerm) || 
+                (contact.email && contact.email.toLowerCase().includes(searchTerm))
+            );
+            renderFilteredContacts(filteredContacts);
+        });
+
+        function renderFilteredContacts(filteredContacts) {
+            contactsList.innerHTML = '';
+            if (filteredContacts.length === 0) {
+                noContactsMessage.style.display = 'block';
+                searchInputSection.style.display = 'none';
+            } else {
+                noContactsMessage.style.display = 'none';
+                searchInputSection.style.display = 'block';
+                filteredContacts.forEach((contact, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${contact.name} - ${contact.phone} - ${contact.email || 'N/A'}</span>
+                        <div class="contact-buttons">
+                            <button class="call-btn" onclick="window.location.href='tel:${contact.phone}'">Call</button>
+                            ${contact.email ? `<button class="mail-btn" onclick="window.location.href='mailto:${contact.email}'">Mail</button>` : ''}
+                            <button class="edit-btn" onclick="editContact(${index})">Edit</button>
+                            <button class="delete-btn" onclick="confirmDelete(${index})">Delete</button>
+                        </div>
+                    `;
+                    contactsList.appendChild(li);
+                });
+            }
+        }
+
+        function editContact(index) {
+            const contact = contacts[index];
+            document.getElementById('name').value = contact.name;
+            document.getElementById('phone').value = contact.phone;
+            document.getElementById('email').value = contact.email;
+            contactToDeleteIndex = index;
+        }
+    </script>
+</body>
+</html>
